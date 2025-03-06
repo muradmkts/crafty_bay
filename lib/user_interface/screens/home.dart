@@ -2,7 +2,12 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:crafty_bay/state_holders/category_data_controller.dart';
 import 'package:crafty_bay/state_holders/home_slider_controller.dart';
 import 'package:crafty_bay/state_holders/nav_controller.dart';
+import 'package:crafty_bay/state_holders/products_by_category_controller.dart';
+import 'package:crafty_bay/state_holders/products_by_remarks_controller.dart';
+import 'package:crafty_bay/user_interface/screens/product_details.dart';
+import 'package:crafty_bay/user_interface/screens/products.dart';
 import 'package:crafty_bay/user_interface/utils/theme_color.dart';
+import 'package:crafty_bay/user_interface/widgets/bottom_popup_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -197,30 +202,48 @@ class _HomeState extends State<Home> {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 5),
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Container(
-                                    height: 80,
-                                    width: 85,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: ThemeColor.softAqua),
-                                  ),
-                                  Container(
-                                    height: 70,
-                                    width: 75,
-                                    decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: NetworkImage(controller
-                                                .serverData!
-                                                .data![i]
-                                                .categoryImg!),
-                                            fit: BoxFit.scaleDown),
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: ThemeColor.softAqua),
-                                  ),
-                                ],
+                              child: InkWell(
+                                onTap:() async{
+                                  final bool isSuccess = await Get.find<ProductsByCategoryController>().getServerData(controller.serverData!.data![i].id!.toString());
+                                  if(isSuccess){
+                                    Get.to(Products(appbarTitle: controller.serverData!.data![i].categoryName!, allProducts: Get.find<ProductsByCategoryController>().products!));
+                                  }else{
+                                    bottomPopupMessage(context, "Something went wrong! Try again.", true);
+                                  }
+                                },
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Container(
+                                      height: 80,
+                                      width: 85,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10),
+                                          color: ThemeColor.softAqua),
+                                    ),
+                                    GetBuilder<ProductsByCategoryController>(
+                                      builder: (controllerTwo) {
+                                        return Visibility(
+                                          visible: !controllerTwo.isLoading,
+                                          replacement: CircularProgressIndicator(color: ThemeColor.aqua,),
+                                          child: Container(
+                                            height: 70,
+                                            width: 75,
+                                            decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                    image: NetworkImage(controller
+                                                        .serverData!
+                                                        .data![i]
+                                                        .categoryImg!),
+                                                    fit: BoxFit.scaleDown),
+                                                borderRadius: BorderRadius.circular(10),
+                                                color: ThemeColor.softAqua),
+                                          ),
+                                        );
+                                      }
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                             Text(controller.serverData!.data![i].categoryName!)
@@ -242,123 +265,136 @@ class _HomeState extends State<Home> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    Text(
-                      "See All",
-                      style: TextStyle(
-                          color: ThemeColor.aqua,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14),
+                    InkWell(
+                      onTap: (){Get.to(Products(appbarTitle: "Popular", allProducts: Get.find<ProductsByRemarksController>().popularProducts!));},
+                      child: Text(
+                        "See All",
+                        style: TextStyle(
+                            color: ThemeColor.aqua,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14),
+                      ),
                     )
                   ],
                 ),
               ),
               SizedBox(
                 height: 190,
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (BuildContext context, int i) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Container(
-                          decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                color: ThemeColor.softBlack.withAlpha(60),
-                                offset: Offset(0, -7),
-                                blurRadius: 3,
-                                spreadRadius: 0.3)
-                          ]),
-                          child: Column(
-                            children: [
-                              Container(
-                                height: 120,
-                                width: 120,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(5),
-                                        topRight: Radius.circular(5)),
-                                    color: ThemeColor.softAqua,
-                                    image: DecorationImage(
-                                        image: NetworkImage(
-                                          "https://images.pexels.com/photos/1537671/pexels-photo-1537671.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-                                        ),
-                                        fit: BoxFit.cover,
-                                        filterQuality: FilterQuality.high)),
-                              ),
-                              Container(
-                                height: 60,
-                                width: 120,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(5),
-                                      bottomRight: Radius.circular(5)),
-                                  color: Colors.white,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 7, vertical: 5),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "New year spacial shoe",
-                                        style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text("\$599",
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600)),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.star,
-                                                size: 12,
-                                                color: ThemeColor.yellow,
+                child: GetBuilder<ProductsByRemarksController>(
+                  builder: (controller) {
+                    return ListView.builder(
+                      itemCount: controller.popularProducts?.products?.length??0,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (BuildContext context, int i) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            child: Container(
+                              decoration: BoxDecoration(boxShadow: [
+                                BoxShadow(
+                                    color: ThemeColor.softBlack.withAlpha(60),
+                                    offset: Offset(0, -7),
+                                    blurRadius: 3,
+                                    spreadRadius: 0.3)
+                              ]),
+                              child: Column(
+                                children: [
+                                  InkWell(
+                                    onTap:(){
+                                      Get.to(ProductDetails());
+                                    },
+                                    child: Container(
+                                      height: 120,
+                                      width: 120,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(5),
+                                              topRight: Radius.circular(5)),
+                                          color: ThemeColor.softAqua,
+                                          image: DecorationImage(
+                                              image: NetworkImage(
+                                                controller.popularProducts!.products![i].image!,
                                               ),
-                                              Text("4.8",
-                                                  style: TextStyle(
-                                                      fontSize: 11,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color: ThemeColor
-                                                          .softBlack)),
-                                            ],
+                                              fit: BoxFit.cover,
+                                              filterQuality: FilterQuality.high)),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 60,
+                                    width: 120,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                          bottomLeft: Radius.circular(5),
+                                          bottomRight: Radius.circular(5)),
+                                      color: Colors.white,
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 7, vertical: 5),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                        controller.popularProducts!.products![i].title!,
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w500),
                                           ),
-                                          Container(
-                                            height: 15,
-                                            width: 15,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(2),
-                                              color: ThemeColor.aqua,
-                                            ),
-                                            child: Icon(
-                                              Icons.favorite_outline,
-                                              size: 11,
-                                              color: Colors.white,
-                                            ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text("\$${controller.popularProducts!.products![i].price}",
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.w600)),
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.star,
+                                                    size: 12,
+                                                    color: ThemeColor.yellow,
+                                                  ),
+                                                  Text(controller.popularProducts!.products![i].star!.toString(),
+                                                      style: TextStyle(
+                                                          fontSize: 11,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: ThemeColor
+                                                              .softBlack)),
+                                                ],
+                                              ),
+                                              Container(
+                                                height: 15,
+                                                width: 15,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: ThemeColor.aqua,
+                                                ),
+                                                child: Icon(
+                                                  Icons.favorite_outline,
+                                                  size: 11,
+                                                  color: Colors.white,
+                                                ),
+                                              )
+                                            ],
                                           )
                                         ],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        });
+                  }
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 20, bottom: 10),
@@ -373,123 +409,131 @@ class _HomeState extends State<Home> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    Text(
-                      "See All",
-                      style: TextStyle(
-                          color: ThemeColor.aqua,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14),
+                    InkWell(
+                      onTap: (){Get.to(Products(appbarTitle: "Special", allProducts: Get.find<ProductsByRemarksController>().specialProducts!));},
+                      child: Text(
+                        "See All",
+                        style: TextStyle(
+                            color: ThemeColor.aqua,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14),
+                      ),
                     )
                   ],
                 ),
               ),
               SizedBox(
                 height: 190,
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (BuildContext context, int i) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Container(
-                          decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                color: ThemeColor.softBlack.withAlpha(100),
-                                offset: Offset(0, -7),
-                                blurRadius: 3,
-                                spreadRadius: 0.3)
-                          ]),
-                          child: Column(
-                            children: [
-                              Container(
-                                height: 120,
-                                width: 120,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(5),
-                                        topRight: Radius.circular(5)),
-                                    color: ThemeColor.softAqua,
-                                    image: DecorationImage(
-                                        image: NetworkImage(
-                                          "https://images.pexels.com/photos/1537671/pexels-photo-1537671.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-                                        ),
-                                        fit: BoxFit.cover,
-                                        filterQuality: FilterQuality.high)),
-                              ),
-                              Container(
-                                height: 60,
-                                width: 120,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(5),
-                                      bottomRight: Radius.circular(5)),
-                                  color: Colors.white,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 7, vertical: 5),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "New year spacial shoe",
-                                        style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                child: GetBuilder<ProductsByRemarksController>(
+                  builder: (controller) {
+                    return ListView.builder(
+                      itemCount: controller.specialProducts?.products?.length??0,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (BuildContext context, int i) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            child: Container(
+                              decoration: BoxDecoration(boxShadow: [
+                                BoxShadow(
+                                    color: ThemeColor.softBlack.withAlpha(100),
+                                    offset: Offset(0, -7),
+                                    blurRadius: 3,
+                                    spreadRadius: 0.3)
+                              ]),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 120,
+                                    width: 120,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(5),
+                                            topRight: Radius.circular(5)),
+                                        color: ThemeColor.softAqua,
+                                        image: DecorationImage(
+                                            image: NetworkImage(
+                                              controller.specialProducts!.products![i].image!,
+                                            ),
+                                            fit: BoxFit.cover,
+                                            filterQuality: FilterQuality.high)),
+                                  ),
+                                  Container(
+                                    height: 60,
+                                    width: 120,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                          bottomLeft: Radius.circular(5),
+                                          bottomRight: Radius.circular(5)),
+                                      color: Colors.white,
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 7, vertical: 5),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Text("\$599",
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600)),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.star,
-                                                size: 12,
-                                                color: ThemeColor.yellow,
-                                              ),
-                                              Text("4.8",
-                                                  style: TextStyle(
-                                                      fontSize: 11,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color: ThemeColor
-                                                          .softBlack)),
-                                            ],
+                                          Text(
+                                            "New year spacial shoe",
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w500),
                                           ),
-                                          Container(
-                                            height: 15,
-                                            width: 15,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(2),
-                                              color: ThemeColor.aqua,
-                                            ),
-                                            child: Icon(
-                                              Icons.favorite_outline,
-                                              size: 11,
-                                              color: Colors.white,
-                                            ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text("\$599",
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.w600)),
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.star,
+                                                    size: 12,
+                                                    color: ThemeColor.yellow,
+                                                  ),
+                                                  Text("4.8",
+                                                      style: TextStyle(
+                                                          fontSize: 11,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: ThemeColor
+                                                              .softBlack)),
+                                                ],
+                                              ),
+                                              Container(
+                                                height: 15,
+                                                width: 15,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: ThemeColor.aqua,
+                                                ),
+                                                child: Icon(
+                                                  Icons.favorite_outline,
+                                                  size: 11,
+                                                  color: Colors.white,
+                                                ),
+                                              )
+                                            ],
                                           )
                                         ],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        });
+                  }
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 20, bottom: 10),
@@ -504,123 +548,131 @@ class _HomeState extends State<Home> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    Text(
-                      "See All",
-                      style: TextStyle(
-                          color: ThemeColor.aqua,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14),
+                    InkWell(
+                      onTap: (){Get.to(Products(appbarTitle: "New", allProducts: Get.find<ProductsByRemarksController>().newProducts!));},
+                      child: Text(
+                        "See All",
+                        style: TextStyle(
+                            color: ThemeColor.aqua,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14),
+                      ),
                     )
                   ],
                 ),
               ),
               SizedBox(
                 height: 190,
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (BuildContext context, int i) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Container(
-                          decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                color: ThemeColor.softBlack.withAlpha(100),
-                                offset: Offset(0, -7),
-                                blurRadius: 3,
-                                spreadRadius: 0.3)
-                          ]),
-                          child: Column(
-                            children: [
-                              Container(
-                                height: 120,
-                                width: 120,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(5),
-                                        topRight: Radius.circular(5)),
-                                    color: ThemeColor.softAqua,
-                                    image: DecorationImage(
-                                        image: NetworkImage(
-                                          "https://images.pexels.com/photos/1537671/pexels-photo-1537671.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-                                        ),
-                                        fit: BoxFit.cover,
-                                        filterQuality: FilterQuality.high)),
-                              ),
-                              Container(
-                                height: 60,
-                                width: 120,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(5),
-                                      bottomRight: Radius.circular(5)),
-                                  color: Colors.white,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 7, vertical: 5),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "New year spacial shoe",
-                                        style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                child: GetBuilder<ProductsByRemarksController>(
+                  builder: (controller) {
+                    return ListView.builder(
+                      itemCount: controller.newProducts?.products?.length??0,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (BuildContext context, int i) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            child: Container(
+                              decoration: BoxDecoration(boxShadow: [
+                                BoxShadow(
+                                    color: ThemeColor.softBlack.withAlpha(100),
+                                    offset: Offset(0, -7),
+                                    blurRadius: 3,
+                                    spreadRadius: 0.3)
+                              ]),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 120,
+                                    width: 120,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(5),
+                                            topRight: Radius.circular(5)),
+                                        color: ThemeColor.softAqua,
+                                        image: DecorationImage(
+                                            image: NetworkImage(
+                                              controller.newProducts!.products![i].image!,
+                                            ),
+                                            fit: BoxFit.cover,
+                                            filterQuality: FilterQuality.high)),
+                                  ),
+                                  Container(
+                                    height: 60,
+                                    width: 120,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                          bottomLeft: Radius.circular(5),
+                                          bottomRight: Radius.circular(5)),
+                                      color: Colors.white,
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 7, vertical: 5),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Text("\$599",
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600)),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.star,
-                                                size: 12,
-                                                color: ThemeColor.yellow,
-                                              ),
-                                              Text("4.8",
-                                                  style: TextStyle(
-                                                      fontSize: 11,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color: ThemeColor
-                                                          .softBlack)),
-                                            ],
+                                          Text(
+                                            "New year spacial shoe",
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w500),
                                           ),
-                                          Container(
-                                            height: 15,
-                                            width: 15,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(2),
-                                              color: ThemeColor.aqua,
-                                            ),
-                                            child: Icon(
-                                              Icons.favorite_outline,
-                                              size: 11,
-                                              color: Colors.white,
-                                            ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text("\$599",
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.w600)),
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.star,
+                                                    size: 12,
+                                                    color: ThemeColor.yellow,
+                                                  ),
+                                                  Text("4.8",
+                                                      style: TextStyle(
+                                                          fontSize: 11,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: ThemeColor
+                                                              .softBlack)),
+                                                ],
+                                              ),
+                                              Container(
+                                                height: 15,
+                                                width: 15,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  color: ThemeColor.aqua,
+                                                ),
+                                                child: Icon(
+                                                  Icons.favorite_outline,
+                                                  size: 11,
+                                                  color: Colors.white,
+                                                ),
+                                              )
+                                            ],
                                           )
                                         ],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        });
+                  }
+                ),
               ),
             ],
           ),

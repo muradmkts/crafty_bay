@@ -1,11 +1,11 @@
 import 'package:crafty_bay/state_holders/category_data_controller.dart';
 import 'package:crafty_bay/state_holders/home_slider_controller.dart';
 import 'package:crafty_bay/state_holders/nav_controller.dart';
+import 'package:crafty_bay/state_holders/products_by_remarks_controller.dart';
 import 'package:crafty_bay/user_interface/screens/cart.dart';
 import 'package:crafty_bay/user_interface/screens/categories.dart';
 import 'package:crafty_bay/user_interface/screens/home.dart';
 import 'package:crafty_bay/user_interface/screens/wishlist.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,14 +19,28 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  bool _isLoading =true;
+  bool _isLoading = true;
 
-  Future<void> _initialize() async{
+  Future<void> _initialize() async {
     await Future.delayed(Duration(seconds: 0));
-    bool categoryIsGot = await Get.find<CategoryDataController>().getCategoryList();
-    bool productListSlidersIsGot = await Get.find<HomeSliderController>().getHomeSlider();
-    if(categoryIsGot&&productListSlidersIsGot){
-      setState(() {_isLoading=false;});
+    bool categoryIsGot =
+        await Get.find<CategoryDataController>().getCategoryList();
+    bool productListSlidersIsGot =
+        await Get.find<HomeSliderController>().getHomeSlider();
+    bool popularProductsIsGot =
+        await Get.find<ProductsByRemarksController>().getServerData("popular");
+    bool specialProductsIsGot =
+        await Get.find<ProductsByRemarksController>().getServerData("special");
+    bool newProductsIsGot =
+        await Get.find<ProductsByRemarksController>().getServerData("new");
+    if (categoryIsGot &&
+        productListSlidersIsGot &&
+        popularProductsIsGot &&
+        specialProductsIsGot &&
+        newProductsIsGot) {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -47,7 +61,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return GetBuilder<NavController>(builder: (controller) {
       return Scaffold(
         body: Visibility(
-          visible: !_isLoading,
+            visible: !_isLoading,
             replacement: Center(
               child: CircularProgressIndicator(
                 color: ThemeColor.aqua,

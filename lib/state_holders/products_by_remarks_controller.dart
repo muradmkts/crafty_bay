@@ -12,8 +12,14 @@ class ProductsByRemarksController extends GetxController{
   bool _isloading = false;
   bool get isLoading => _isloading;
 
-  ProductsByRemarks? _serverData;
-  ProductsByRemarks? get serverData => _serverData;
+  ProductsByRemarks? _popularProducts;
+  ProductsByRemarks? get popularProducts => _popularProducts;
+
+  ProductsByRemarks? _specialProducts;
+  ProductsByRemarks? get specialProducts => _specialProducts;
+
+  ProductsByRemarks? _newProducts;
+  ProductsByRemarks? get newProducts => _newProducts;
 
   String? _error;
   String? get error => _error;
@@ -28,7 +34,9 @@ class ProductsByRemarksController extends GetxController{
 
     _isloading = false;
     if(networkData.isSuccess){
-      _serverData = ProductsByRemarks.fromJson(networkData.responseBody);
+      if(remark == "popular") _popularProducts = ProductsByRemarks.fromJson(networkData.responseBody);
+      if(remark == "special") _specialProducts = ProductsByRemarks.fromJson(networkData.responseBody);
+      if(remark == "new") _newProducts = ProductsByRemarks.fromJson(networkData.responseBody);
       update();
       return true;
 
