@@ -24,4 +24,29 @@ class NetworkCaller {
           isSuccess: false, responseCode: 404, errorMessage: e.toString());
     }
   }
+
+  static Future<NetworkResponse> postResponse(
+      {required final String url,
+      required final String token,
+      required final Map<String, dynamic> dataToPost}) async {
+    try {
+      final Uri serverAddress = Uri.parse(url);
+      final Response serverResponse = await post(serverAddress,
+          headers: {"token": token, "content-type": "application/jason"},
+          body: json.encode(dataToPost));
+
+      if (serverResponse.statusCode == 200) {
+        return NetworkResponse(
+            isSuccess: true,
+            responseCode: 200,
+            responseBody: json.decode(serverResponse.body));
+      } else {
+        return NetworkResponse(
+            isSuccess: false, responseCode: serverResponse.statusCode);
+      }
+    } catch (e) {
+      return NetworkResponse(
+          isSuccess: false, responseCode: 404, errorMessage: e.toString());
+    }
+  }
 }

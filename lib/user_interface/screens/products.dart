@@ -1,4 +1,6 @@
 import 'package:crafty_bay/models/products_by_remarks.dart';
+import 'package:crafty_bay/state_holders/product_details_controller.dart';
+import 'package:crafty_bay/user_interface/screens/product_details.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../utils/theme_color.dart';
@@ -40,20 +42,26 @@ class Products extends StatelessWidget {
                     decoration: BoxDecoration(),
                     child: Column(
                       children: [
-                        Container(
-                          height: 120,
-                          width: 120,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(5),
-                                  topRight: Radius.circular(5)),
-                              color: ThemeColor.softAqua,
-                              image: DecorationImage(
-                                  image: NetworkImage(
-                                    allProducts.products![i].image!,
-                                  ),
-                                  fit: BoxFit.cover,
-                                  filterQuality: FilterQuality.high)),
+                        InkWell( onTap: (){
+                          Get.find<ProductDetailsController>().getServerResponse("1");
+                          Get.to(ProductDetails());
+
+                        },
+                          child: Container(
+                            height: 120,
+                            width: 120,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(5),
+                                    topRight: Radius.circular(5)),
+                                color: ThemeColor.softAqua,
+                                image: DecorationImage(
+                                    image: NetworkImage(
+                                      allProducts.products![i].image!,
+                                    ),
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.high)),
+                          ),
                         ),
                         Container(
                           height: 60,

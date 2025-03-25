@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
 import '../utils/theme_color.dart';
 
-class AddSubtreuct extends StatelessWidget {
+class AddSubtreuct extends StatefulWidget {
   const AddSubtreuct({
     super.key,
   });
 
+  static int itemCount = 1;
+  @override
+  State<AddSubtreuct> createState() => _AddSubtreuctState();
+}
+
+class _AddSubtreuctState extends State<AddSubtreuct> {
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        InkWell(
+        InkWell(onTap: (){
+          if(AddSubtreuct.itemCount!=1){ AddSubtreuct.itemCount--;}else{return;}
+          setState(() {
+
+          });
+
+        },
           child: Container(
             height: 20,
             width: 20,
@@ -28,12 +40,18 @@ class AddSubtreuct extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 5),
           child: Text(
-            "01",
+            AddSubtreuct.itemCount.toString(),
             style: TextStyle(
                 color: ThemeColor.softBlack, fontWeight: FontWeight.w600),
           ),
         ),
-        InkWell(
+        InkWell(onTap: (){
+
+          AddSubtreuct.itemCount++;
+          setState(() {
+
+          });
+        },
           child: Container(
             height: 20,
             width: 20,
