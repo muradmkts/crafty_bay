@@ -11,14 +11,14 @@ class Urls{
   static String listByBrand({required final String brandId}) => "$base/ListProductByBrand/$brandId";
   static String listByRemark({required final String remark}) => "$base/ListProductByRemark/$remark";
   static String details({required final String productId}) => "$base/ProductDetailsById/$productId";
-  static String reviews({required final String productId}) => "$base}/ListReviewByProduct/$productId";
+  static String reviews({required final String productId}) => "$base/ListReviewByProduct/$productId";
   static const String createReview = "$base/CreateProductReview";
   static const String sliders = "$base/ListProductSlider";
   static const String wishList = "$base/ProductWishList";
   static const String addCart = "$base/CreateCartList";
-  static String addWish({required final String productId}) => "$base}/CreateWishList/$productId";
+  static String addWish({required final String productId}) => "$base/CreateWishList/$productId";
   static const String cartList = "$base/CartList";
-  static String deleteCart({required final String productId}) => "$base}/DeleteCartList/$productId";
+  static String deleteCart({required final String productId}) => "$base/DeleteCartList/$productId";
 
 
 }

@@ -1,6 +1,7 @@
 import 'package:crafty_bay/state_holders/add_cart_controller.dart';
 import 'package:crafty_bay/state_holders/cart_list_controller.dart';
 import 'package:crafty_bay/state_holders/category_data_controller.dart';
+import 'package:crafty_bay/state_holders/delete_cart_controller.dart';
 import 'package:crafty_bay/state_holders/home_slider_controller.dart';
 import 'package:crafty_bay/state_holders/login_controller.dart';
 import 'package:crafty_bay/state_holders/login_state_controller.dart';
@@ -27,6 +28,7 @@ class ControllerBuindings extends Bindings {
     Get.lazyPut(()=>ReviewDataController(), fenix:  true);
     Get.lazyPut(()=>AddCartController(), fenix:  true);
     Get.lazyPut(()=>CartListController(), fenix:  true);
+    Get.lazyPut(()=>DeleteCartController(), fenix:  true);
     Get.put(LoginStateController());
     Get.put(NavController());
     Get.put(CategoryDataController());
